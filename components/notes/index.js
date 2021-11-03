@@ -65,6 +65,10 @@ export const NotesDashboard = () => {
     active === true && setActive(!true);
   };
 
+  // setActiveFolder
+
+  const [activeFolder, setActiveFolder] = useState([]);
+
   return (
     <Box display="flex" w="full">
       <Flex w="full">
@@ -72,7 +76,7 @@ export const NotesDashboard = () => {
           display="flex"
           flexDirection="column"
           p={4}
-          h="full"
+          h="100vh"
           background="gray.100"
           flex="1"
           gridGap={4}
@@ -114,11 +118,20 @@ export const NotesDashboard = () => {
               </Box>
             )}
             {folders !== null &&
-              folders.map((cat) => <Folders key={cat} data={cat} />)}
+              folders.map((cat) => (
+                <Folders
+                  key={cat}
+                  data={cat}
+                  setActiveFolder={setActiveFolder}
+                />
+              ))}
           </Box>
         </Box>
         <Box p={4} background="white" flex="3">
-          <Notes />
+          {folders !== null &&
+            folders
+              .filter((cat) => cat === activeFolder.data)
+              .map((data) => <Notes key={data} data={data} />)}
         </Box>
       </Flex>
       <style jsx>{`

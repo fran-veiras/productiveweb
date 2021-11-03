@@ -5,7 +5,7 @@ import { NotesDashboard } from '../components/notes';
 
 export default function Home() {
   return (
-    <div>
+    <Box height="100vh" overflow="hidden">
       <Head>
         <title>Multidisplay notes</title>
         <meta name="Multidisplay notes" content="notes with multi display" />
@@ -15,6 +15,6 @@ export default function Home() {
         <NotesDashboard />
         <Display />
       </Flex>
-    </div>
+    </Box>
   );
 }
