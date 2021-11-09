@@ -4,29 +4,95 @@ import React, { useEffect, useState } from 'react';
 import Plus from '../../public/plus';
 import { Folders } from './folders';
 import { Notes } from './notes';
+import { v4 as uuidv4 } from 'uuid';
 
 export const NotesDashboard = () => {
   // tags info
 
   const [tags, setTags] = useState([]);
 
+  // id generator
+
+  const createId = () => {
+    return uuidv4();
+  };
+
+  const getLocalStorageID = () => {
+    const local =
+      typeof localStorage !== 'undefined' &&
+      JSON.parse(localStorage.getItem(ids));
+
+    if (local === null) {
+      return [];
+    } else {
+      return local;
+    }
+  };
+
+  const [ids, setIds] = useState(getLocalStorageID());
+
   // local storage
 
   const getLocalStorage = () => {
     if (typeof localStorage !== 'undefined') {
-      return JSON.parse(localStorage.getItem('folders'));
+      return JSON.parse(localStorage.getItem(newIds));
     } else {
       return [];
     }
   };
+
   const [folders, setFolders] = useState(getLocalStorage());
 
+  useEffect(() => {
+    addNewId();
+  }, [folders]);
+
+  const addNewId = () => {
+    setIds(createId());
+  };
+
+  function SetLocalStorageID(item) {
+    localStorage.setItem(item, JSON.stringify(item));
+  }
+
+  useEffect(() => {
+    SetLocalStorageID(ids);
+  }, []);
+
+  useEffect(() => {
+    SetLocalStorageID(ids);
+  }, [folders]);
+
+  const [newIds, setNewIds] = useState([]);
+
+  useEffect(() => {
+    setNewIds(ids);
+  }, [ids]);
+
   function SetLocalStorage(item) {
-    localStorage.setItem('folders', JSON.stringify(item));
+    localStorage.setItem(newIds, JSON.stringify({ title: item }));
   }
 
   useEffect(() => {
     SetLocalStorage(folders);
+  }, [folders]);
+
+  // get keys
+
+  const [keys, setKeys] = useState([]);
+
+  function allStorage() {
+    keys = Object.keys(localStorage);
+
+    return keys;
+  }
+
+  useEffect(() => {
+    setKeys(allStorage());
+  }, []);
+
+  useEffect(() => {
+    setKeys(allStorage());
   }, [folders]);
 
   // tags info
@@ -48,13 +114,22 @@ export const NotesDashboard = () => {
     if (folders !== null) {
       e.key === 'Enter' &&
         setFolders((cat) => [
-          ...folders,
           '#' + tags.charAt(0).toUpperCase() + tags.replace(/ /g, '').slice(1),
         ]) &
           setTags('') &
           setActive(!true);
     }
   };
+
+  // const [pages, setPages] = useState([]);
+
+  // useEffect(() => {
+  //   setPages((cat) => [...cat, folders]);
+  // }, [folders]);
+
+  // useEffect(() => {
+  //   setPages((cat) => [...cat, folders]);
+  // }, []);
 
   // input
 
@@ -117,8 +192,8 @@ export const NotesDashboard = () => {
                 <span>#</span>
               </Box>
             )}
-            {folders !== null &&
-              folders.map((cat) => (
+            {keys !== null &&
+              keys.map((cat) => (
                 <Folders
                   key={cat}
                   data={cat}

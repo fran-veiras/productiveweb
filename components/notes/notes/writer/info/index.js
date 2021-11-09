@@ -4,11 +4,33 @@ import React, { useEffect, useState } from 'react';
 import Trash from '../../../../../public/trash';
 
 export const InfoNotes = ({ setLinesJump, numb, lineJump }) => {
-  const [data, setData] = useState([]);
+  // info inputs
+
+  const getLocalStorage = () => {
+    if (typeof localStorage !== 'undefined') {
+      return JSON.parse(localStorage.getItem(numb));
+    } else {
+      return [];
+    }
+  };
+
+  const [data, setData] = useState(getLocalStorage());
+
+  function SetLocalStorage(item) {
+    localStorage.setItem(numb, JSON.stringify(item));
+  }
+
+  useEffect(() => {
+    SetLocalStorage(data);
+  }, [data]);
 
   const setValueOfData = (e) => {
     setData(e.target.value);
   };
+
+  console.log(data);
+
+  // addLineJump
 
   const addLineJump = (e) => {
     e.key === 'Enter' &&
@@ -87,14 +109,26 @@ export const InfoNotes = ({ setLinesJump, numb, lineJump }) => {
   // delete component
 
   const deleteComponent = (e) => {
-    (e.key === 'Backspace') & (data.length === 0) && filterComponent(numb);
+    if (lineJump.length > 1) {
+      (e.key === 'Backspace') & (data !== null && data.length === 0) &&
+        filterComponent(numb);
+    }
   };
 
   const filterComponent = (numb) => {
     setLinesJump((item) => item.filter((item) => item !== numb));
+    localStorage.removeItem(numb);
   };
 
   // last
+
+  const InputRef = React.useRef(null);
+
+  useEffect(() => {
+    if (lineJump[lineJump.length - 1] === numb) {
+      InputRef.current.focus();
+    }
+  }, [lineJump]);
 
   return (
     <>
@@ -118,16 +152,14 @@ export const InfoNotes = ({ setLinesJump, numb, lineJump }) => {
             type="text"
             value={data}
             onChange={setValueOfData}
-            onKeyPress={(e) => {
-              addLineJump(e);
-              deleteComponent(e);
-            }}
+            onKeyPress={addLineJump}
+            onKeyDown={deleteComponent}
             caretColor="#fff"
             position="absolute"
+            ref={InputRef}
             top="0"
             left="0"
             p={0}
-            autoFocus
             lineHeight="normal"
             fontSize="3xl"
             color="black"
@@ -161,7 +193,7 @@ export const InfoNotes = ({ setLinesJump, numb, lineJump }) => {
             top="0"
             left="0"
             p={0}
-            autoFocus
+            ref={InputRef}
             lineHeight="normal"
             fontSize="l"
             color="black"
@@ -187,16 +219,14 @@ export const InfoNotes = ({ setLinesJump, numb, lineJump }) => {
             type="text"
             value={data}
             onChange={setValueOfData}
-            onKeyPress={(e) => {
-              addLineJump(e);
-              deleteComponent(e);
-            }}
+            onKeyPress={addLineJump}
+            onKeyDown={deleteComponent}
             caretColor="#fff"
+            ref={InputRef}
             position="absolute"
             top="0"
             left="0"
             p={0}
-            autoFocus
             lineHeight="normal"
             fontSize="xl"
             color="black"
